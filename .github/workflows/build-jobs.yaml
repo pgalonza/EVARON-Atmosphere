@@ -9,6 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository_owner }}/devkita64-atmosphere:latest
     steps:
+      - name: Checkout libnx
+        uses: actions/checkout@v4
+        with:
+          repository: Atmosphere-NX/libnx
+          path: libnx
+          ref: 1900_support
+      - name: Update latest libnx
+        run: |
+          cd libnx
+          make install -j$(nproc)
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build Atmosphere
