@@ -32,7 +32,7 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "atmosphere-*.zip,fusee.bin"
+          artifacts: "./out/nintendo_nx_arm64_armv8a/release/atmosphere-*.zip,./out/nintendo_nx_arm64_armv8a/release/fusee.bin"
           prerelease: false
           name: "ns-Atmosphere ${{ github.ref_name }}"
           bodyFile: "git-cliff/CHANGELOG.md"
