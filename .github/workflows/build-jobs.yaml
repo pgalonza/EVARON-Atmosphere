@@ -27,10 +27,12 @@ jobs:
           source /opt/venv/bin/activate
           git config --global --add safe.directory "*"
           make -f atmosphere.mk dist-no-debug
+          hactool -t kip1 ./stratosphere/loader/out/nintendo_nx_arm64_armv8a/release/loader.kip \
+          --uncompress=./stratosphere/loader/out/nintendo_nx_arm64_armv8a/release/loader-uncompress.kip
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: atmosphere-artifacts
           path: |
             ./out/nintendo_nx_arm64_armv8a/release/*
-            ./stratosphere/loader/out/nintendo_nx_arm64_armv8a/release/loader.kip
+            ./stratosphere/loader/out/nintendo_nx_arm64_armv8a/release/*
