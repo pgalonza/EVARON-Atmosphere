@@ -2,7 +2,7 @@
  * Copyright (C) Switch-OC-Suite
  *
  * Copyright (c) 2023 hanai3Bi
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -34,7 +34,7 @@ Result CpuFreqVdd(u32* ptr) {
     } else {
         PATCH_OFFSET(ptr, GetDvfsTableLastEntry(C.marikoCpuDvfsTable)->freq);
     }
-    
+   
     R_SUCCEED();
 }
 
@@ -56,7 +56,7 @@ Result CpuVoltRange(u32* ptr) {
             if (*(ptr-1) == 620) {
                 PATCH_OFFSET((ptr-1), 600);
             }
-            
+           
         }
         R_SUCCEED();
     }
@@ -74,12 +74,15 @@ Result CpuVoltDfll(u32* ptr) {
     if (C.marikoCpuUV) {
         if (C.marikoCpuUV == 1) {
             PATCH_OFFSET(&(entry->tune0_low), 0x0000FF90); //process_id 0
+            PATCH_OFFSET(&(entry->tune0_high), 0x0000FFFF);
+			PATCH_OFFSET(&(entry->tune1_low), 0x021107FF);
+			PATCH_OFFSET(&(entry->tune1_high), 0x00000000);
         } else if (C.marikoCpuUV == 2) {
             PATCH_OFFSET(&(entry->tune0_low), 0x0000FFA0); //process_id 1
+			PATCH_OFFSET(&(entry->tune0_high), 0x0000FFFF);
+			PATCH_OFFSET(&(entry->tune1_low), 0x021107FF);
+			PATCH_OFFSET(&(entry->tune1_high), 0x00000000);
         }
-        PATCH_OFFSET(&(entry->tune0_high), 0x0000FFFF);
-        PATCH_OFFSET(&(entry->tune1_low), 0x021107FF);
-        PATCH_OFFSET(&(entry->tune1_high), 0x00000000);
     }
 
     R_SUCCEED();
@@ -98,16 +101,16 @@ Result GpuFreqMaxAsm(u32* ptr32) {
 
     u32 max_clock;
     switch(C.marikoGpuUV) {
-        case 0: 
+        case 0:
             max_clock = GetDvfsTableLastEntry(C.marikoGpuDvfsTable)->freq;
             break;
-        case 1: 
+        case 1:
             max_clock = GetDvfsTableLastEntry(C.marikoGpuDvfsTableSLT)->freq;
             break;
-        case 2: 
+        case 2:
             max_clock = GetDvfsTableLastEntry(C.marikoGpuDvfsTableHiOPT)->freq;
             break;
-        default: 
+        default:
             max_clock = GetDvfsTableLastEntry(C.marikoGpuDvfsTable)->freq;
             break;
     }
@@ -171,9 +174,9 @@ void MemMtcTableAutoAdjust(MarikoMtcTable* table, const MarikoMtcTable* ref) {
         ADJUST_PARAM_TABLE(TABLE, shadow_regs_ca_train.PARAM, REF)  \
         ADJUST_PARAM_TABLE(TABLE, shadow_regs_rdwr_train.PARAM, REF)
 
-    #define WRITE_PARAM_BURST_REG(TABLE, PARAM, VALUE)          TABLE->burst_regs.PARAM = VALUE; 
+    #define WRITE_PARAM_BURST_REG(TABLE, PARAM, VALUE)          TABLE->burst_regs.PARAM = VALUE;
     #define WRITE_PARAM_CA_TRAIN_REG(TABLE, PARAM, VALUE)       TABLE->shadow_regs_ca_train.PARAM = VALUE;
-    #define WRITE_PARAM_RDWR_TRAIN_REG(TABLE, PARAM, VALUE)     TABLE->shadow_regs_rdwr_train.PARAM = VALUE;    
+    #define WRITE_PARAM_RDWR_TRAIN_REG(TABLE, PARAM, VALUE)     TABLE->shadow_regs_rdwr_train.PARAM = VALUE;   
 
     #define WRITE_PARAM_ALL_REG(TABLE, PARAM, VALUE)    \
         WRITE_PARAM_BURST_REG(TABLE, PARAM, VALUE)      \
@@ -181,7 +184,7 @@ void MemMtcTableAutoAdjust(MarikoMtcTable* table, const MarikoMtcTable* ref) {
         WRITE_PARAM_RDWR_TRAIN_REG(TABLE, PARAM, VALUE)
 
     #define GET_CYCLE_CEIL(PARAM) u32(CEIL(double(PARAM) / tCK_avg))
-   
+  
     WRITE_PARAM_ALL_REG(table, emc_rc,                  GET_CYCLE_CEIL(tRC));
     WRITE_PARAM_ALL_REG(table, emc_rfc,                 GET_CYCLE_CEIL(tRFCab));
     WRITE_PARAM_ALL_REG(table, emc_rfcpb,               GET_CYCLE_CEIL(tRFCpb));
@@ -227,10 +230,10 @@ void MemMtcTableAutoAdjust(MarikoMtcTable* table, const MarikoMtcTable* ref) {
 
     #define CLEAR_BIT(BITS, HIGH, LOW)  \
         BITS = BITS & ~( ((1u << HIGH) << 1u) - (1u << LOW) );
-    
+   
     #define ADJUST(TARGET)              (u32)CEIL(TARGET * (C.marikoEmcMaxClock / EmcClkOSLimit))
     #define ADJUST_INVERSE(TARGET)      (u32)(TARGET * (EmcClkOSLimit / 1000) / (C.marikoEmcMaxClock / 1000))
-    
+   
     // Burst MC Regs
     #define WRITE_PARAM_BURST_MC_REG(TABLE, PARAM, VALUE)   TABLE->burst_mc_regs.PARAM = VALUE;
 
@@ -328,7 +331,7 @@ void MemMtcTableAutoAdjust(MarikoMtcTable* table, const MarikoMtcTable* ref) {
 void MemMtcTableCustomAdjust(MarikoMtcTable* table) {
     if (C.mtcConf != CUSTOM_ADJ_ALL)
     	return;
-       
+      
     constexpr u32 MC_ARB_DIV = 4;
     constexpr u32 MC_ARB_SFA = 2;
 
@@ -345,9 +348,9 @@ void MemMtcTableCustomAdjust(MarikoMtcTable* table) {
         table->burst_mc_regs.mc_emem_arb_timing_rc      = CEIL(GET_CYCLE_CEIL(tRC) / MC_ARB_DIV) - 1;
         table->burst_mc_regs.mc_emem_arb_timing_rp      = CEIL(GET_CYCLE_CEIL(tRPpb) / MC_ARB_DIV) - 1 + MC_ARB_SFA;
         table->burst_mc_regs.mc_emem_arb_timing_ras     = CEIL(GET_CYCLE_CEIL(tRAS) / MC_ARB_DIV) - 2;
-        
+       
     }
-    
+   
     if (TIMING_PRESET_TWO) {
         WRITE_PARAM_ALL_REG(table, emc_tfaw,    GET_CYCLE_CEIL(tFAW));
         WRITE_PARAM_ALL_REG(table, emc_rrd,     GET_CYCLE_CEIL(tRRD));
@@ -524,8 +527,8 @@ Result MemFreqDvbTable(u32* ptr) {
     }
     new_start->freq = C.marikoEmcMaxClock;
     /* Max dvfs entry is 32, but HOS doesn't seem to boot if exact freq doesn't exist in dvb table,
-       reason why it's like this 
-    */ 
+       reason why it's like this
+    */
 
     R_SUCCEED();
 }

@@ -2,7 +2,7 @@
  * Copyright (C) Switch-OC-Suite
  *
  * Copyright (c) 2023 hanai3Bi
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -48,7 +48,7 @@ Result GpuFreqMaxAsm(u32* ptr32) {
         R_THROW(ldr::ResultInvalidGpuFreqMaxPattern());
 
     u32 max_clock = GetDvfsTableLastEntry(C.eristaGpuDvfsTable)->freq;
-           
+          
     u32 asm_patch[2] = {
         asm_set_rd(asm_set_imm16(asm_pattern[0], max_clock), rd),
         asm_set_rd(asm_set_imm16(asm_pattern[1], max_clock >> 16), rd)
@@ -82,7 +82,7 @@ void MemMtcTableAutoAdjust(EristaMtcTable* table) {
     TABLE->shadow_regs_ca_train.PARAM = VALUE;       \
     TABLE->shadow_regs_quse_train.PARAM = VALUE;     \
     TABLE->shadow_regs_rdwr_train.PARAM = VALUE;
- 
+
     #define GET_CYCLE_CEIL(PARAM)   u32(CEIL(double(PARAM) / tCK_avg))
 
     WRITE_PARAM_ALL_REG(table, emc_rc,                  GET_CYCLE_CEIL(tRC));
@@ -120,7 +120,7 @@ void MemMtcTableAutoAdjust(EristaMtcTable* table) {
     WRITE_PARAM_ALL_REG(table, emc_trefbw,              REFBW);
 
     #define WRITE_PARAM_BURST_MC_REG(TABLE, PARAM, VALUE)   TABLE->burst_mc_regs.PARAM = VALUE;
-    
+   
     constexpr u32 MC_ARB_DIV = 4;
     constexpr u32 MC_ARB_SFA = 2;
     table->burst_mc_regs.mc_emem_arb_timing_rcd     = CEIL(GET_CYCLE_CEIL(tRCD) / MC_ARB_DIV) - 2;
@@ -142,7 +142,7 @@ void MemMtcTableAutoAdjust(EristaMtcTable* table) {
 void MemMtcTableCustomAdjust(EristaMtcTable* table) {
     if (C.mtcConf != CUSTOM_ADJ_ALL)
     	return;
-       
+      
     constexpr u32 MC_ARB_DIV = 4;
     constexpr u32 MC_ARB_SFA = 2;
 
@@ -204,7 +204,7 @@ void MemMtcTableCustomAdjust(EristaMtcTable* table) {
         WRITE_PARAM_ALL_REG(table, emc_w2r,      W2R);
         WRITE_PARAM_ALL_REG(table, emc_w2p,      WTP);
         WRITE_PARAM_ALL_REG(table, emc_rw2pden,  WTPDEN);
-        
+       
         table->burst_mc_regs.mc_emem_arb_timing_wap2pre = CEIL(WTP / MC_ARB_DIV);
         table->burst_mc_regs.mc_emem_arb_timing_r2w     = CEIL(R2W / MC_ARB_DIV) - 1 + MC_ARB_SFA;
         table->burst_mc_regs.mc_emem_arb_timing_w2r     = CEIL(W2R / MC_ARB_DIV) - 1 + MC_ARB_SFA;

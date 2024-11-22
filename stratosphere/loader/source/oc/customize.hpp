@@ -2,7 +2,7 @@
  * Copyright (C) Switch-OC-Suite
  *
  * Copyright (c) 2023 hanai3Bi
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -31,7 +31,7 @@ enum MtcConfig: u32 {
     AUTO_ADJ_ALL = 0,
     CUSTOM_ADJ_ALL = 1,
     NO_ADJ_ALL = 2,
-    
+
     CUSTOMIZED_ALL = 4,
 };
 
@@ -67,7 +67,7 @@ typedef struct CustomizeTable {
     u32 ramTimingPresetSix;
     u32 ramTimingPresetSeven;
     //
-    u32 marikoGpuVoltArray[17];
+    u32 marikoGpuVoltArray[18];
     CustomizeCpuDvfsTable eristaCpuDvfsTable;
     CustomizeCpuDvfsTable marikoCpuDvfsTable;
     CustomizeCpuDvfsTable marikoCpuDvfsTableSLT;
